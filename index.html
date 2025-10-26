@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Supplier Query Zone — Customer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --lav-50: #fbf7ff;
+        --lav-100: #f3e9fb;
+        --lav-200: #e6d6f7;
+        --lav-400: #b57edc;
+        --lav-500: #9b59b6;
+        --muted: #6b6b78;
+        --card: #ffffffaa;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto,
+          Helvetica, Arial;
+        margin: 0;
+        background: linear-gradient(180deg, var(--lav-50), #f6f0fb);
+        color: #222;
+      }
+      .app {
+        max-width: 1100px;
+        margin: 28px auto;
+        padding: 18px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 12px;
+        border-radius: 12px;
+        background: linear-gradient(90deg, var(--lav-100), #efe6fb);
+        box-shadow: 0 6px 18px rgba(149, 92, 207, 0.08);
+      }
+      header h1 {
+        margin: 0;
+        color: var(--lav-500);
+        font-size: 20px;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 18px;
+        margin-top: 18px;
+      }
+      @media (max-width: 880px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+      .sidebar {
+        background: var(--card);
+        padding: 16px;
+        border-radius: 12px;
+        min-height: 280px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+      }
+      .main {
+        background: var(--card);
+        padding: 18px;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .logo .badge {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--lav-400), var(--lav-500));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+      }
+      nav a {
+        display: block;
+        padding: 10px;
+        border-radius: 8px;
+        color: var(--lav-500);
+        text-decoration: none;
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+      nav a.active {
+        background: linear-gradient(90deg, var(--lav-200), #f2e6fb);
+      }
+      .card {
+        background: transparent;
+        padding: 8px;
+        border-radius: 8px;
+      }
+      label {
+        font-size: 13px;
+        color: var(--muted);
+        display: block;
+        margin-top: 10px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        margin-top: 6px;
+        font-size: 14px;
+        background: white;
+      }
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: none;
+        background: linear-gradient(90deg, var(--lav-400), var(--lav-500));
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .btn.ghost {
+        background: transparent;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        color: var(--lav-500);
+        font-weight: 600;
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .center {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .small {
+        font-size: 13px;
+        padding: 6px 8px;
+        border-radius: 8px;
+      }
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 8px 0;
+      }
+      .query-list {
+        margin-top: 12px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 10px;
+        border-bottom: 1px solid #f1eafa;
+        text-align: left;
+        font-size: 14px;
+      }
+      th {
+        color: var(--muted);
+        font-weight: 700;
+      }
+      .pill {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #f7effb, #f3e9fb);
+        color: var(--lav-500);
+        font-weight: 700;
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .userbox {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(90deg, var(--lav-400), var(--lav-500));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+      }
+      .hint {
+        font-size: 13px;
+        color: #5a5a66;
+      }
+      .empty {
+        padding: 18px;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+        text-align: center;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="logo">
+          <div class="badge">SQ</div>
+          <div>
+            <h1>Supplier Query Zone</h1>
+            <div class="muted" style="font-size: 13px">
+              Public form for customers — admin manages all queries on admin
+              page
+            </div>
+          </div>
+        </div>
+        <div style="margin-left: auto" class="muted"></div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar" id="leftPanel">
+          <nav>
+            <a href="#" id="nav-add" class="active">Submit Query</a>
+            <a href="#" id="nav-my">My Queries</a>
+            <a href="/admin.html" target="_blank">Admin Dashboard →</a>
+          </nav>
+
+          <div style="margin-top: 16px">
+            <div class="muted">Quick actions</div>
+            <div style="margin-top: 8px">
+              <button class="btn ghost" id="btn-logout" style="width: 100%">
+                Logout
+              </button>
+            </div>
+          </div>
+          <div style="margin-top: 18px" class="muted small">
+            Tip: Create an account, then submit queries. Admin can view/delete
+            queries from admin dashboard.
+          </div>
+        </aside>
+
+        <main class="main">
+          <div class="topbar">
+            <div>
+              <div id="welcomeTitle" style="font-weight: 700">Welcome</div>
+              <div class="muted small" id="welcomeSub">
+                Sign up or log in to submit queries
+              </div>
+            </div>
+            <div class="userbox">
+              <div class="hint" id="authLinks">
+                <a href="#" id="showSignup">Sign up</a> •
+                <a href="#" id="showLogin">Log in</a>
+              </div>
+              <div class="avatar" id="avatarIcon" style="display: none">U</div>
+            </div>
+          </div>
+
+          <!-- AUTH / SUBMISSION AREA -->
+          <section id="authArea">
+            <!-- Signup -->
+            <div id="signupBlock" style="display: none">
+              <h3 style="margin: 0; color: var(--lav-500)">Create account</h3>
+              <form id="signupForm" style="margin-top: 12px">
+                <label>Name</label>
+                <input id="su_name" required />
+                <label>Email</label>
+                <input id="su_email" type="email" required />
+                <label>Password</label>
+                <input id="su_pass" type="password" required />
+                <div style="margin-top: 12px; display: flex; gap: 8px">
+                  <button class="btn" type="submit">Sign up</button>
+                  <button class="btn ghost" type="button" id="cancelSignup">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Login -->
+            <div id="loginBlock" style="display: none">
+              <h3 style="margin: 0; color: var(--lav-500)">Log in</h3>
+              <form id="loginForm" style="margin-top: 12px">
+                <label>Email</label>
+                <input id="li_email" type="email" required />
+                <label>Password</label>
+                <input id="li_pass" type="password" required />
+                <div style="margin-top: 12px; display: flex; gap: 8px">
+                  <button class="btn" type="submit">Log in</button>
+                  <button class="btn ghost" type="button" id="cancelLogin">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Submit Query -->
+            <div id="submitBlock" style="display: block">
+              <h3 style="margin-top: 0; color: var(--lav-500)">New Query</h3>
+              <form id="queryForm">
+                <label>Subject</label>
+                <input id="q_subject" required />
+                <label>Category</label>
+                <input
+                  id="q_category"
+                  placeholder="Packaging / Raw Material / Delivery"
+                />
+                <div class="info-row">
+                  <div style="flex: 1">
+                    <label>Priority</label>
+                    <select id="q_priority">
+                      <option>Normal</option>
+                      <option>High</option>
+                      <option>Critical</option>
+                    </select>
+                  </div>
+                  <div style="flex: 1">
+                    <label>Attach (optional)</label>
+                    <input id="q_attach" type="file" />
+                  </div>
+                </div>
+                <label>Description</label>
+                <textarea id="q_desc" required></textarea>
+                <div
+                  style="
+                    margin-top: 12px;
+                    display: flex;
+                    gap: 8px;
+                    align-items: center;
+                  "
+                >
+                  <button class="btn" id="btnSubmit">Submit Query</button>
+                  <div class="muted small" id="submitHint">
+                    You must be logged in to submit. (Create an account above)
+                  </div>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <!-- My Queries -->
+          <section id="myQueriesBlock" style="display: none">
+            <h3 style="margin: 0; color: var(--lav-500)">My Queries</h3>
+            <div class="query-list" id="myQueriesList">
+              <!-- Filled by JS -->
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      // LocalStorage keys
+      const KEY_USERS = "sq_users_v1";
+      const KEY_QUERIES = "sq_queries_v1";
+      const KEY_SESSION = "sq_session_v1";
+
+      // Helpers
+      const $ = (sel) => document.querySelector(sel);
+      const getUsers = () =>
+        JSON.parse(localStorage.getItem(KEY_USERS) || "[]");
+      const saveUsers = (u) =>
+        localStorage.setItem(KEY_USERS, JSON.stringify(u));
+      const getQueries = () =>
+        JSON.parse(localStorage.getItem(KEY_QUERIES) || "[]");
+      const saveQueries = (q) =>
+        localStorage.setItem(KEY_QUERIES, JSON.stringify(q));
+      const setSession = (s) =>
+        localStorage.setItem(KEY_SESSION, JSON.stringify(s));
+      const getSession = () =>
+        JSON.parse(localStorage.getItem(KEY_SESSION) || "null");
+
+      // UI refs
+      const signupBlock = $("#signupBlock");
+      const loginBlock = $("#loginBlock");
+      const submitBlock = $("#submitBlock");
+      const myQueriesBlock = $("#myQueriesBlock");
+      const welcomeTitle = $("#welcomeTitle");
+      const welcomeSub = $("#welcomeSub");
+      const authLinks = $("#authLinks");
+      const avatarIcon = $("#avatarIcon");
+      const submitHint = $("#submitHint");
+
+      // Init: default admin user (not customer) — admin is separate and uses admin.html
+      if (!getUsers().length) {
+        // example pre-seed customer user (optional)
+        const seed = [];
+        saveUsers(seed);
+      }
+
+      // Nav handlers
+      $("#nav-add").addEventListener("click", (e) => {
+        e.preventDefault();
+        showSection("add");
+      });
+      $("#nav-my").addEventListener("click", (e) => {
+        e.preventDefault();
+        showSection("my");
+      });
+
+      $("#showSignup").addEventListener("click", (e) => {
+        e.preventDefault();
+        showAuth("signup");
+      });
+      $("#showLogin").addEventListener("click", (e) => {
+        e.preventDefault();
+        showAuth("login");
+      });
+
+      $("#cancelSignup").addEventListener("click", (e) => {
+        e.preventDefault();
+        hideAuth();
+      });
+      $("#cancelLogin").addEventListener("click", (e) => {
+        e.preventDefault();
+        hideAuth();
+      });
+
+      // Signup
+      $("#signupForm").addEventListener("submit", (ev) => {
+        ev.preventDefault();
+        const name = $("#su_name").value.trim();
+        const email = $("#su_email").value.trim().toLowerCase();
+        const pass = $("#su_pass").value;
+        if (!name || !email || !pass) return alert("Please fill all fields");
+        const users = getUsers();
+        if (users.find((u) => u.email === email))
+          return alert("User already exists. Use login.");
+        // store with simple base64 'hash' (client-side only)
+        users.push({ name, email, pass: btoa(pass) });
+        saveUsers(users);
+        alert("Account created — please login");
+        hideAuth();
+      });
+
+      // Login
+      $("#loginForm").addEventListener("submit", (ev) => {
+        ev.preventDefault();
+        const email = $("#li_email").value.trim().toLowerCase();
+        const pass = $("#li_pass").value;
+        const users = getUsers();
+        const u = users.find((x) => x.email === email && x.pass === btoa(pass));
+        if (!u) return alert("Invalid credentials");
+        setSession({
+          email: u.email,
+          name: u.name,
+          loggedAt: new Date().toISOString(),
+        });
+        updateAuthUI();
+        hideAuth();
+      });
+
+      // Logout
+      $("#btn-logout").addEventListener("click", () => {
+        localStorage.removeItem(KEY_SESSION);
+        updateAuthUI();
+        showSection("add");
+      });
+
+      // Submit query
+      $("#queryForm").addEventListener("submit", async (ev) => {
+        ev.preventDefault();
+        const session = getSession();
+        if (!session) return alert("Please log in first to submit a query.");
+        const subject = $("#q_subject").value.trim();
+        const category = $("#q_category").value.trim();
+        const priority = $("#q_priority").value;
+        const desc = $("#q_desc").value.trim();
+        const fileInput = $("#q_attach");
+        let attachment = null;
+        if (fileInput.files && fileInput.files[0]) {
+          attachment = await fileToBase64(fileInput.files[0]);
+        }
+        const queries = getQueries();
+        const item = {
+          id: "q_" + Date.now(),
+          userEmail: session.email,
+          userName: session.name,
+          subject,
+          category,
+          priority,
+          description: desc,
+          attachment,
+          status: "Open",
+          createdAt: new Date().toISOString(),
+        };
+        queries.push(item);
+        saveQueries(queries);
+        alert("Query submitted. Admin will see it on the dashboard.");
+        $("#queryForm").reset();
+        renderMyQueries();
+      });
+
+      // File to base64
+      function fileToBase64(file) {
+        return new Promise((res, rej) => {
+          const r = new FileReader();
+          r.onload = () =>
+            res({ name: file.name, type: file.type, data: r.result });
+          r.onerror = rej;
+          r.readAsDataURL(file);
+        });
+      }
+
+      // UI helpers
+      function showAuth(kind) {
+        signupBlock.style.display = kind === "signup" ? "block" : "none";
+        loginBlock.style.display = kind === "login" ? "block" : "none";
+        submitBlock.style.display = "none";
+        myQueriesBlock.style.display = "none";
+      }
+      function hideAuth() {
+        signupBlock.style.display = "none";
+        loginBlock.style.display = "none";
+        submitBlock.style.display = "block";
+        myQueriesBlock.style.display = "none";
+      }
+      function showSection(sec) {
+        if (sec === "add") {
+          submitBlock.style.display = "block";
+          myQueriesBlock.style.display = "none";
+        } else {
+          submitBlock.style.display = "none";
+          myQueriesBlock.style.display = "block";
+          renderMyQueries();
+        }
+      }
+
+      function updateAuthUI() {
+        const session = getSession();
+        if (session) {
+          welcomeTitle.textContent = `Hi, ${session.name}`;
+          welcomeSub.textContent = `Logged in as ${session.email}`;
+          authLinks.style.display = "none";
+          avatarIcon.style.display = "flex";
+          avatarIcon.textContent = session.name.slice(0, 1).toUpperCase();
+          submitHint.textContent = "You are logged in — submit your query.";
+        } else {
+          welcomeTitle.textContent = "Welcome";
+          welcomeSub.textContent = "Sign up or log in to submit queries";
+          authLinks.style.display = "block";
+          avatarIcon.style.display = "none";
+          submitHint.textContent =
+            "You must be logged in to submit. (Create an account above)";
+        }
+      }
+
+      function renderMyQueries() {
+        const session = getSession();
+        const container = $("#myQueriesList");
+        container.innerHTML = "";
+        if (!session) {
+          container.innerHTML =
+            '<div class="empty">Please log in to view your queries.</div>';
+          return;
+        }
+        const queries = getQueries()
+          .filter((q) => q.userEmail === session.email)
+          .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+        if (!queries.length) {
+          container.innerHTML =
+            '<div class="empty">No queries yet — submit one using the form.</div>';
+          return;
+        }
+        const table = document.createElement("table");
+        table.innerHTML = `<thead><tr><th>Subject</th><th>Priority</th><th>Status</th><th>When</th><th></th></tr></thead>`;
+        const tbody = document.createElement("tbody");
+        for (const q of queries) {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td><strong>${escapeHtml(
+            q.subject
+          )}</strong><div class="muted small">${escapeHtml(
+            q.category
+          )}</div></td>
+          <td><span class="pill">${q.priority}</span></td>
+          <td>${q.status}</td>
+          <td class="muted small">${new Date(q.createdAt).toLocaleString()}</td>
+          <td><button class="btn ghost small" data-id="${
+            q.id
+          }" onclick="viewQuery(event)">View</button></td>`;
+          tbody.appendChild(tr);
+        }
+        table.appendChild(tbody);
+        container.appendChild(table);
+      }
+
+      // View query (global so onclick in html works)
+      window.viewQuery = function (e) {
+        const id = e.currentTarget.dataset.id;
+        const q = getQueries().find((x) => x.id === id);
+        if (!q) return alert("Not found");
+        let msg = `Subject: ${q.subject}\nCategory: ${q.category}\nPriority: ${
+          q.priority
+        }\nStatus: ${q.status}\n\nDescription:\n${
+          q.description
+        }\n\nSubmitted by: ${q.userName} (${q.userEmail})\nWhen: ${new Date(
+          q.createdAt
+        ).toLocaleString()}`;
+        if (q.attachment) {
+          if (confirm(msg + "\n\nThis query has an attachment. Download now?"))
+            downloadBase64(q.attachment.data, q.attachment.name);
+        } else {
+          alert(msg);
+        }
+      };
+
+      function downloadBase64(dataUrl, filename) {
+        const a = document.createElement("a");
+        a.href = dataUrl;
+        a.download = filename || "attachment";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+
+      function escapeHtml(s) {
+        if (!s) return "";
+        return String(s)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+      }
+
+      // On load
+      updateAuthUI();
+      hideAuth();
+    </script>
+  </body>
+</html>

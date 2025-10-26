@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Supplier Query Zone — Admin</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --lav-50: #faf5ff;
+        --lav-100: #f0e6fb;
+        --lav-400: #b57edc;
+        --lav-500: #8e44ad;
+        --muted: #6b6b78;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto,
+          Helvetica, Arial;
+        margin: 0;
+        background: linear-gradient(180deg, var(--lav-50), #f7f0fb);
+        color: #222;
+      }
+      .wrap {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 18px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        border-radius: 12px;
+        background: linear-gradient(90deg, var(--lav-100), #efe6fb);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      }
+      header h1 {
+        margin: 0;
+        color: var(--lav-500);
+      }
+      .content {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 18px;
+        margin-top: 14px;
+      }
+      @media (max-width: 920px) {
+        .content {
+          grid-template-columns: 1fr;
+        }
+      }
+      .panel {
+        background: white;
+        padding: 14px;
+        border-radius: 12px;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.04);
+      }
+      .login-box {
+        max-width: 420px;
+        margin: 40px auto;
+        padding: 18px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+      }
+      label {
+        display: block;
+        margin-top: 10px;
+        color: var(--muted);
+      }
+      input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        margin-top: 6px;
+      }
+      .btn {
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: none;
+        background: linear-gradient(90deg, var(--lav-400), var(--lav-500));
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .btn.ghost {
+        background: transparent;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        color: var(--lav-500);
+      }
+      .top-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .search {
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        width: 240px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+      }
+      th,
+      td {
+        padding: 10px;
+        border-bottom: 1px solid #f1eafa;
+        text-align: left;
+      }
+      th {
+        color: var(--muted);
+        font-weight: 700;
+      }
+      .pill {
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #f8eefb;
+        color: var(--lav-500);
+        font-weight: 700;
+      }
+      .actions button {
+        margin-right: 6px;
+        padding: 6px 8px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+      }
+      .view {
+        background: #7c3aed;
+        color: white;
+      }
+      .delete {
+        background: #ef4444;
+        color: white;
+      }
+      .status {
+        background: #10b981;
+        color: white;
+      }
+      .small {
+        font-size: 13px;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .empty {
+        padding: 18px;
+        border-radius: 8px;
+        background: #faf7ff;
+        color: var(--muted);
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>Supplier Query Zone — Admin</h1>
+        <div style="margin-left: auto" class="muted small">
+          Admin • LocalStorage
+        </div>
+      </header>
+
+      <div id="loginArea" class="login-box">
+        <h2 style="margin: 0; color: var(--lav-500)">Admin Login</h2>
+        <form id="adminLogin" style="margin-top: 12px">
+          <label>Username</label>
+          <input id="admin_user" value="admin" />
+          <label>Password</label>
+          <input id="admin_pass" type="password" value="admin123" />
+          <div style="margin-top: 12px; display: flex; gap: 8px">
+            <button class="btn" type="submit">Log in</button>
+            <button class="btn ghost" type="button" id="demoFill">
+              Demo fill
+            </button>
+          </div>
+          <div class="muted small" style="margin-top: 10px">
+            Default admin credentials:
+            <strong>admin / admin123</strong> (client-only demo)
+          </div>
+        </form>
+      </div>
+
+      <div id="appArea" style="display: none">
+        <div class="content">
+          <aside class="panel">
+            <div style="display: flex; align-items: center; gap: 10px">
+              <div
+                style="
+                  width: 44px;
+                  height: 44px;
+                  border-radius: 8px;
+                  background: linear-gradient(
+                    90deg,
+                    var(--lav-400),
+                    var(--lav-500)
+                  );
+                  color: #fff;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-weight: 700;
+                "
+              >
+                A
+              </div>
+              <div>
+                <div style="font-weight: 700" id="adminName">Admin</div>
+                <div class="muted small" id="adminEmail">admin@local</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 18px">
+              <div class="muted small">Filters</div>
+              <div
+                style="
+                  margin-top: 10px;
+                  display: flex;
+                  gap: 8px;
+                  flex-direction: column;
+                "
+              >
+                <select id="filterPriority">
+                  <option value="">All priorities</option>
+                  <option>Normal</option>
+                  <option>High</option>
+                  <option>Critical</option>
+                </select>
+                <select id="filterStatus">
+                  <option value="">All statuses</option>
+                  <option>Open</option>
+                  <option>In Progress</option>
+                  <option>Resolved</option>
+                </select>
+                <button class="btn ghost" id="btnClearFilters">
+                  Clear filters
+                </button>
+              </div>
+              <div style="margin-top: 16px">
+                <button class="btn" id="btnExport">Export CSV</button>
+                <button
+                  class="btn ghost"
+                  id="btnLogout"
+                  style="width: 100%; margin-top: 8px"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          </aside>
+
+          <main class="panel">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <div>
+                <div style="font-weight: 700">All Queries</div>
+                <div class="muted small">Manage customer-submitted queries</div>
+              </div>
+              <div class="top-actions">
+                <input
+                  class="search"
+                  id="searchInput"
+                  placeholder="Search supplier, subject, email..."
+                />
+                <button class="btn ghost" id="btnRefresh">Refresh</button>
+              </div>
+            </div>
+
+            <div id="tableWrap" style="margin-top: 12px">
+              <!-- table inserted by JS -->
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Keys same as index.html
+      const KEY_QUERIES = "sq_queries_v1";
+
+      // Simple admin credentials (client-only demo)
+      const ADMIN_USER = "admin";
+      const ADMIN_PASS = "admin123";
+
+      const loginArea = document.getElementById("loginArea");
+      const appArea = document.getElementById("appArea");
+
+      // For demo: populate demo queries
+      document.getElementById("demoFill").addEventListener("click", () => {
+        const sample = [
+          {
+            id: "q_" + Date.now(),
+            userEmail: "alice@example.com",
+            userName: "Alice",
+            subject: "Packaging quality issue",
+            category: "Packaging",
+            priority: "High",
+            description: "Boxes received with dents",
+            status: "Open",
+            createdAt: new Date().toISOString(),
+          },
+          {
+            id: "q_" + (Date.now() + 1),
+            userEmail: "bob@example.com",
+            userName: "Bob",
+            subject: "Late delivery",
+            category: "Delivery",
+            priority: "Normal",
+            description: "Shipment delayed by 3 days",
+            status: "In Progress",
+            createdAt: new Date().toISOString(),
+          },
+        ];
+        const existing = JSON.parse(localStorage.getItem(KEY_QUERIES) || "[]");
+        localStorage.setItem(
+          KEY_QUERIES,
+          JSON.stringify(existing.concat(sample))
+        );
+        alert("Demo queries added. Click Refresh.");
+      });
+
+      // Admin login
+      document.getElementById("adminLogin").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const u = document.getElementById("admin_user").value.trim();
+        const p = document.getElementById("admin_pass").value;
+        if (u === ADMIN_USER && p === ADMIN_PASS) {
+          openAdmin();
+        } else {
+          alert("Invalid admin credentials (demo).");
+        }
+      });
+
+      function openAdmin() {
+        loginArea.style.display = "none";
+        appArea.style.display = "block";
+        document.getElementById("adminName").textContent = "Administrator";
+        document.getElementById("adminEmail").textContent =
+          ADMIN_USER + "@local";
+        renderTable();
+      }
+
+      document.getElementById("btnLogout").addEventListener("click", () => {
+        if (confirm("Logout?")) {
+          appArea.style.display = "none";
+          loginArea.style.display = "block";
+        }
+      });
+
+      document
+        .getElementById("btnRefresh")
+        .addEventListener("click", renderTable);
+      document
+        .getElementById("btnClearFilters")
+        .addEventListener("click", () => {
+          document.getElementById("filterPriority").value = "";
+          document.getElementById("filterStatus").value = "";
+          renderTable();
+        });
+      document
+        .getElementById("searchInput")
+        .addEventListener("input", () => renderTable());
+      document
+        .getElementById("filterPriority")
+        .addEventListener("change", () => renderTable());
+      document
+        .getElementById("filterStatus")
+        .addEventListener("change", () => renderTable());
+      document.getElementById("btnExport").addEventListener("click", exportCSV);
+
+      function getQueries() {
+        return JSON.parse(localStorage.getItem(KEY_QUERIES) || "[]");
+      }
+
+      function renderTable() {
+        const all = getQueries()
+          .slice()
+          .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+        const q = document
+          .getElementById("searchInput")
+          .value.trim()
+          .toLowerCase();
+        const fp = document.getElementById("filterPriority").value;
+        const fs = document.getElementById("filterStatus").value;
+        const filtered = all.filter((item) => {
+          if (fp && item.priority !== fp) return false;
+          if (fs && item.status !== fs) return false;
+          if (!q) return true;
+          return [
+            item.userName,
+            item.userEmail,
+            item.subject,
+            item.category,
+            item.description,
+          ]
+            .join(" ")
+            .toLowerCase()
+            .includes(q);
+        });
+
+        const wrap = document.getElementById("tableWrap");
+        if (!filtered.length) {
+          wrap.innerHTML = '<div class="empty">No queries found.</div>';
+          return;
+        }
+
+        let html =
+          "<table><thead><tr><th>Supplier</th><th>Subject</th><th>Priority</th><th>Status</th><th>When</th><th></th></tr></thead><tbody>";
+        for (const item of filtered) {
+          html += `<tr>
+          <td><strong>${escapeHtml(
+            item.userName
+          )}</strong><div class="muted small">${escapeHtml(
+            item.userEmail
+          )}</div></td>
+          <td>${escapeHtml(item.subject)}<div class="muted small">${escapeHtml(
+            item.category
+          )}</div></td>
+          <td><span class="pill">${escapeHtml(item.priority)}</span></td>
+          <td>${escapeHtml(item.status)}</td>
+          <td class="muted small">${new Date(
+            item.createdAt
+          ).toLocaleString()}</td>
+          <td class="small">
+            <button class="actions view" data-id="${
+              item.id
+            }" onclick="viewItem(event)">View</button>
+            <button class="actions status" data-id="${
+              item.id
+            }" onclick="changeStatus(event)">Status</button>
+            <button class="actions delete" data-id="${
+              item.id
+            }" onclick="deleteItem(event)">Delete</button>
+          </td>
+        </tr>`;
+        }
+        html += "</tbody></table>";
+        wrap.innerHTML = html;
+      }
+
+      // Global functions triggered by onclick in table
+      window.viewItem = function (e) {
+        const id = e.currentTarget.dataset.id;
+        const item = getQueries().find((x) => x.id === id);
+        if (!item) return alert("Not found");
+        let msg = `Supplier: ${item.userName} (${item.userEmail})\nSubject: ${
+          item.subject
+        }\nCategory: ${item.category}\nPriority: ${item.priority}\nStatus: ${
+          item.status
+        }\nWhen: ${new Date(
+          item.createdAt
+        ).toLocaleString()}\n\nDescription:\n${item.description}`;
+        if (item.attachment) {
+          if (confirm(msg + "\n\nThis query has an attachment. Download?"))
+            downloadBase64(item.attachment.data, item.attachment.name);
+        } else {
+          alert(msg);
+        }
+      };
+
+      window.changeStatus = function (e) {
+        const id = e.currentTarget.dataset.id;
+        const all = getQueries();
+        const idx = all.findIndex((x) => x.id === id);
+        if (idx < 0) return alert("Not found");
+        const current = all[idx].status || "Open";
+        const next = prompt(
+          "Change status (Open, In Progress, Resolved):",
+          current
+        );
+        if (!next) return;
+        all[idx].status = next;
+        localStorage.setItem(KEY_QUERIES, JSON.stringify(all));
+        renderTable();
+      };
+
+      window.deleteItem = function (e) {
+        const id = e.currentTarget.dataset.id;
+        if (!confirm("Delete this query permanently?")) return;
+        const all = getQueries().filter((x) => x.id !== id);
+        localStorage.setItem(KEY_QUERIES, JSON.stringify(all));
+        renderTable();
+      };
+
+      function escapeHtml(s) {
+        if (!s) return "";
+        return String(s)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+      }
+      function downloadBase64(dataUrl, filename) {
+        const a = document.createElement("a");
+        a.href = dataUrl;
+        a.download = filename || "file";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+
+      function exportCSV() {
+        const all = getQueries();
+        if (all.length === 0) return alert("No queries to export");
+        const rows = [
+          [
+            "id",
+            "userName",
+            "userEmail",
+            "subject",
+            "category",
+            "priority",
+            "status",
+            "createdAt",
+            "description",
+            "attachmentName",
+          ],
+        ];
+        for (const r of all) {
+          rows.push([
+            r.id,
+            r.userName,
+            r.userEmail,
+            r.subject,
+            r.category,
+            r.priority,
+            r.status,
+            r.createdAt,
+            r.description,
+            r.attachment ? r.attachment.name : "",
+          ]);
+        }
+        const csv = rows
+          .map((row) =>
+            row
+              .map((cell) => `"${String(cell || "").replace(/"/g, '""')}"`)
+              .join(",")
+          )
+          .join("\\n");
+        const blob = new Blob([csv], { type: "text/csv" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "supplier-queries.csv";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+    </script>
+  </body>
+</html>
